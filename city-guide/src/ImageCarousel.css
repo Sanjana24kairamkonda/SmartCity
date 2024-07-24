@@ -1,0 +1,32 @@
+/* src/ImageCarousel.css */
+.slick-prev, .slick-next {
+  color: #000;
+}
+
+.slick-dots li button:before {
+  color: #000;
+}
+
+.text-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+}
+
+/* ImageCarousel.css */
+.image-container {
+  display:block;
+  padding-left: 350px;
+  padding-top: 100px;
+  background-color: #a4bec0;
+  padding-bottom: 100px;
+}
+
+.image-container img {
+  width: 400px;
+  height: auto;
+}
+
+
+

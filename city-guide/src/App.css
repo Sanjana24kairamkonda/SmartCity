@@ -1,0 +1,101 @@
+/* Navbar styling - adjust if necessary */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #343a40;
+  color: #fff;
+  z-index: 1050; /* Higher than sidebar to stay above it */
+}
+
+/* Sidebar styling */
+.sidebar {
+  position: fixed;
+  top: 56px; /* Height of the navbar */
+  left: 0;
+  height: calc(100% - 56px); /* Full height minus navbar height */
+  width: 250px;
+  background-color: #343a40;
+  color: #fff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* Ensure sidebar is below the navbar */
+  overflow-y: auto;
+  transform: translateX(0);
+  transition: transform 0.3s ease;
+}
+
+/* Adjust content to fit alongside sidebar */
+.content-wrapper {
+  margin-left: 250px; /* Width of the sidebar */
+  padding-top: 56px; /* Height of the navbar */
+}
+
+/* Adjust content for smaller screens */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .content-wrapper {
+    margin-left: 200px; /* Adjust for smaller sidebar width */
+  }
+}
+
+/* Sidebar item styling */
+.sidebar .list-group-item {
+  background-color: #343a40;
+  border: none;
+  color: #fff;
+}
+
+.sidebar .list-group-item:hover {
+  background-color: #495057;
+}
+
+/* Main content card styling */
+.custom-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.custom-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.card-text {
+  font-size: 1rem;
+  color: #555;
+}
+
+.button-container {
+  margin-top: 1rem;
+}
+
+.button-container .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.button-container .btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #00408d;
+}
+
+.button-container .btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+}
+
+.button-container .btn-warning:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+}
