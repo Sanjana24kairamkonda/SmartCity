@@ -32,9 +32,11 @@ jobs:
           --zone us-central1-a \
           --project ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Install GKE Auth Plugin
+    - name: Install GKE Auth Plugin via apt
       run: |
-        gcloud components install gke-gcloud-auth-plugin
+        sudo apt-get update
+        sudo apt-get install -y google-cloud-cli-gke-gcloud-auth-plugin
+
 
     - name: Deploy to GKE
       run: |
