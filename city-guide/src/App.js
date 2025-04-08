@@ -6,7 +6,6 @@ import 'slick-carousel/slick/slick-theme.css';
 import ImageCarousel from './ImageCarousel';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './Login'; // Your Login component
-import Signup from './Signup'; // Your Signup component
 import Sidebar from './Sidebar';
 import Mainpage from './Mainpage';
 import CategoryPage from './CategoryPage';
@@ -20,7 +19,6 @@ const App = () => {
         <Routes>
           <Route path="/" element={<ImageCarousel />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
           <Route path="/page" element={<Mainpage />} />
           <Route path="/maincontent" element={<Maincontent />} />
           <Route path="/category/:categoryId" element={<CategoryDetail />} />
