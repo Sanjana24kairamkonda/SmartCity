@@ -32,6 +32,10 @@ jobs:
           --zone us-central1-a \
           --project ${{ secrets.GCP_PROJECT_ID }}
 
+    - name: Install GKE Auth Plugin
+      run: |
+        gcloud components install gke-gcloud-auth-plugin
+
     - name: Deploy to GKE
       run: |
         kubectl apply -f k8s/deployment.yaml
