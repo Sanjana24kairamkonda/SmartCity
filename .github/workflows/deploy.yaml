@@ -1,7 +1,9 @@
 name: React App CI/CD
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      master
 
 jobs:
   build-and-deploy:
