@@ -26,11 +26,10 @@ jobs:
       uses: google-github-actions/auth@v2
       with:
         credentials_json: '${{ secrets.GCP_SA_KEY }}'
-
-    - name: Configure GKE Cluster
+    - name: Configure GKE cluster
       run: |
         gcloud container clusters get-credentials react-gke-cluster \
-          --region ${{ secrets.GCP_REGION }} \
+          --zone us-central1-a \
           --project ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Deploy to GKE
