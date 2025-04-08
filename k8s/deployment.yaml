@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: react-container
-          image: ghcr.io/sanjanakairamkonda/react-app:latest
+          image: ghcr.io/sanjanakairamkonda/image:1
           ports:
             - containerPort: 80
