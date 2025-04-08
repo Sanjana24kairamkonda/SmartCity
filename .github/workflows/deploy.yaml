@@ -5,6 +5,10 @@ on:
     branches:
       master
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -24,7 +28,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ secrets.ACTOR }}
-        password: ${{ secrets.HUB_PASSWORD }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and Push Docker image
       uses: docker/build-push-action@v5
