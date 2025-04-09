@@ -1,9 +1,13 @@
-name: React App Deploy to GKE
+name: React App CI/CD
 
 on:
   push:
     branches:
-      - master
+      - master  # Change to 'main' if that's your default branch
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   deploy:
@@ -13,29 +17,24 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
+    # Setup Google Cloud SDK with gke-gcloud-auth-plugin
+    - name: Set up gcloud CLI
+      uses: google-github-actions/setup-gcloud@v2
       with:
-        version: 'latest'
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+        install_components: true
+        components: gke-gcloud-auth-plugin
 
-    - name: Install gke-gcloud-auth-plugin
-      run: |
-        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-        sudo apt-get update
-        sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
-
-    - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v2
-      with:
-        credentials_json: '${{ secrets.GCP_SA_KEY }}'
-
-    - name: Configure GKE cluster access
+    # Authenticate with your GKE cluster
+    - name: Configure GKE cluster
       run: |
         gcloud container clusters get-credentials react-gke-cluster \
           --zone us-central1-a \
           --project ${{ secrets.GCP_PROJECT_ID }}
 
+    # Deploy Kubernetes manifests
     - name: Deploy to GKE
       run: |
         kubectl apply -f k8s/deployment.yaml
