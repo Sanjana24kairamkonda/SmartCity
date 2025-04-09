@@ -3,7 +3,7 @@ name: React App CI/CD
 on:
   push:
     branches:
-      - master  # Change to 'main' if that's your default branch
+      - master
 
 permissions:
   contents: read
@@ -17,7 +17,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Setup Google Cloud SDK with gke-gcloud-auth-plugin
     - name: Set up gcloud CLI
       uses: google-github-actions/setup-gcloud@v2
       with:
@@ -28,23 +27,22 @@ jobs:
 
     - name: Authenticate to GCP
       run: |
-        # Decode the Base64 service account key and save it as gcp-key.json
         echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > gcp-key.json
-        # Set GOOGLE_APPLICATION_CREDENTIALS to the service account key file
         echo "GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json" >> $GITHUB_ENV
-        # Authenticate using the decoded key
         gcloud auth activate-service-account --key-file=gcp-key.json
-        # Set the project for gcloud
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
-    # Authenticate with your GKE cluster
+    - name: Install gke-gcloud-auth-plugin manually
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
+
     - name: Configure GKE cluster
       run: |
         gcloud container clusters get-credentials react-gke-cluster \
           --zone us-central1-a \
           --project ${{ secrets.GCP_PROJECT_ID }}
 
-    # Deploy Kubernetes manifests
     - name: Deploy to GKE
       run: |
         kubectl apply -f k8s/deployment.yaml
