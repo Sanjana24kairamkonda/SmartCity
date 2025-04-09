@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: google/cloud-sdk:slim  # Comes with gcloud, kubectl, and the auth plugin
+      image: gcr.io/google.com/cloudsdktool/cloud-sdk:latest  # Comes with gcloud, kubectl, and the auth plugin
 
     steps:
     - name: Checkout code
