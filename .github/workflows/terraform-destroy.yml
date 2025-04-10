@@ -1,35 +1,44 @@
-# .github/workflows/terraform-destroy.yml
-name: Terraform Destroy
+name: GKE Resource Cleanup (No State)
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
-  destroy:
+  cleanup:
     runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+    container:
+      image: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
 
     - name: Authenticate to GCP
       run: |
         echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > gcp-key.json
-        echo "GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json" >> $GITHUB_ENV
+        export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
         gcloud auth activate-service-account --key-file=gcp-key.json
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Terraform Init
-      run: terraform init -reconfigure
-
-    - name: Terraform Destroy
+    - name: Delete GKE Node Pool
       run: |
-        terraform destroy -auto-approve \
-          -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-          -var="region=${{ secrets.GCP_REGION }}" \
-          -var="zone=${{ secrets.GCP_ZONE }}"
+        gcloud container node-pools delete react-node-pool \
+          --cluster=react-gke-cluster \
+          --zone=us-central1-a \
+          --quiet || echo "Node pool may already be deleted"
+
+    - name: Delete GKE Cluster
+      run: |
+        gcloud container clusters delete react-gke-cluster \
+          --zone=us-central1-a \
+          --quiet || echo "Cluster may already be deleted"
+
+    - name: Delete VPC Network
+      run: |
+        gcloud compute networks delete react-app-vpc \
+          --quiet || echo "VPC network may already be deleted"
