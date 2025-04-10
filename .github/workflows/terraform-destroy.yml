@@ -1,4 +1,4 @@
-name: GKE Resource Cleanup (No State)
+name: GCP Force Delete Resources
 
 on:
   workflow_dispatch:
@@ -8,37 +8,52 @@ permissions:
   id-token: write
 
 jobs:
-  cleanup:
+  gcp-cleanup:
     runs-on: ubuntu-latest
 
     container:
       image: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
 
     steps:
-    - name: Checkout Repo
+    - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Authenticate to GCP
+    - name: Authenticate with GCP
       run: |
         echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > gcp-key.json
         export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
         gcloud auth activate-service-account --key-file=gcp-key.json
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+        gcloud config set compute/zone ${{ secrets.GCP_ZONE }}
+        gcloud config set compute/region ${{ secrets.GCP_REGION }}
 
-    - name: Delete GKE Node Pool
+    - name: Verify Cluster Exists
       run: |
+        echo "🔍 Checking GKE cluster existence..."
+        gcloud container clusters list
+
+    - name: Delete Node Pool
+      run: |
+        echo " Deleting node pool (if exists)..."
         gcloud container node-pools delete react-node-pool \
           --cluster=react-gke-cluster \
-          --zone=us-central1-a \
-          --quiet || echo "Node pool may already be deleted"
+          --zone=${{ secrets.GCP_ZONE }} \
+          --quiet || echo "⚠️ Node pool not found or already deleted."
 
     - name: Delete GKE Cluster
       run: |
+        echo "Deleting GKE cluster (if exists)..."
         gcloud container clusters delete react-gke-cluster \
-          --zone=us-central1-a \
-          --quiet || echo "Cluster may already be deleted"
+          --zone=${{ secrets.GCP_ZONE }} \
+          --quiet || echo "⚠️ Cluster not found or already deleted."
+
+    - name: Verify Network Exists
+      run: |
+        echo "🔍 Listing networks..."
+        gcloud compute networks list
 
     - name: Delete VPC Network
       run: |
+        echo " Deleting VPC network (if exists)..."
         gcloud compute networks delete react-app-vpc \
-          --quiet || echo "VPC network may already be deleted"
+          --quiet || echo "⚠️ VPC network not found or already deleted."
